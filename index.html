@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBX Character with Mistral AI Response Video</title>
+    <style>
+        body { margin: 0; text-align: center; }
+        canvas { display: block; margin: auto; background: black; }
+        #video-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Click and Speak to Ask AI</h2>
+    <button id="startButton">Ask AI</button>
+    <button id="pauseButton">Pause</button>
+    <button id="resumeButton">Resume</button>
+    <button id="stopButton">Stop</button>
+    <canvas id="responseCanvas"></canvas>
+    <div id="video-container"></div>
+
+    <script>
+        const canvas = document.getElementById("responseCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 720;
+        canvas.height = 1280;
+
+        let recorder, videoChunks = [];
+        let aiText = "";
+        let isPaused = false;
+        let isStopped = false;
+
+        // 🎤 Speech Recognition Setup
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = async function(event) {
+            const userQuestion = event.results[0][0].transcript.toLowerCase();
+            console.log('🎤 User Asked:', userQuestion);
+
+            if (userQuestion.includes("pause")) {
+                pauseAnimation();
+                return;
+            } else if (userQuestion.includes("resume")) {
+                resumeAnimation();
+                return;
+            } else if (userQuestion.includes("stop")) {
+                stopAnimation();
+                return;
+            }
+
+            const response = await getAIResponse(userQuestion);
+            displayAIResponse(response);
+        };
+
+        recognition.onspeechend = function() {
+            recognition.stop();
+        };
+
+        recognition.onerror = function(event) {
+            console.error('⚠ Speech Recognition Error:', event.error);
+        };
+
+        // 🎥 Start Recording the Canvas
+        function startRecording() {
+            const stream = canvas.captureStream(30);
+            recorder = new MediaRecorder(stream);
+            videoChunks = [];
+
+            recorder.ondataavailable = e => videoChunks.push(e.data);
+            recorder.onstop = saveVideo;
+            recorder.start();
+        }
+
+        // 💾 Save Recorded Video
+        function saveVideo() {
+            const blob = new Blob(videoChunks, { type: "video/mp4" });
+            const url = URL.createObjectURL(blob);
+
+            const video = document.createElement("video");
+            video.controls = true;
+            video.src = url;
+            video.style.width = "100%";
+
+            const downloadLink = document.createElement("a");
+            downloadLink.href = url;
+            downloadLink.download = "AI_Response.mp4";
+            downloadLink.textContent = "Download Video";
+
+            document.getElementById("video-container").appendChild(video);
+            document.getElementById("video-container").appendChild(downloadLink);
+        }
+
+        // 🎬 Animate Scrolling AI Response (5 words per row)
+        let animationFrame;
+        function displayAIResponse(text) {
+            aiText = text;
+            let words = aiText.split(" ");
+            let groupedText = [];
+
+            for (let i = 0; i < words.length; i += 5) {
+                groupedText.push(words.slice(i, i + 5).join(" "));
+            }
+
+            let y = canvas.height;
+            const speed = 2;
+            isPaused = false;
+            isStopped = false;
+            startRecording();
+
+            function animate() {
+                if (isStopped) {
+                    return;
+                }
+                if (!isPaused) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "white";
+                    ctx.font = "30px Arial";
+                    ctx.textAlign = "center";
+
+                    groupedText.forEach((line, i) => {
+                        ctx.fillText(line, canvas.width / 2, y + (i * 50));
+                    });
+
+                    y -= speed;
+
+                    if (y + groupedText.length * 50 > 0) {
+                        animationFrame = requestAnimationFrame(animate);
+                    } else {
+                        recorder.stop();
+                    }
+                } else {
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+            animate();
+            speak(aiText);
+        }
+
+        // 🔊 Convert AI Response to Speech
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        // 🧠 Fetch AI Response from Mistral API
+        async function getAIResponse(userText) {
+            const apiKey = "JpG1TgREeN7mJNEBOWn2UymebtmhStNB";
+            const endpoint = "https://api.mistral.ai/v1/chat/completions";
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "mistral-medium",
+                        messages: [
+                            { role: "system", content: "You are a helpful AI assistant." },
+                            { role: "user", content: userText }
+                        ],
+                        max_tokens: 100,
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error("❌ API Error:", response.status, response.statusText);
+                    return "I couldn't connect to the AI. Try again later.";
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content.trim();
+            } catch (error) {
+                console.error("❌ API Request Failed:", error);
+                return "Couldn't connect to AI. Try again later.";
+            }
+        }
+
+        // 🎙️ Trigger Speech Recognition on Button Click
+        document.getElementById("startButton").addEventListener("click", () => {
+            console.log("🎤 Listening for question...");
+            recognition.start();
+        });
+
+        // ⏸ Pause Animation
+        function pauseAnimation() {
+            console.log("⏸ Pausing animation...");
+            isPaused = true;
+            speechSynthesis.pause();
+        }
+
+        // ▶ Resume Animation
+        function resumeAnimation() {
+            console.log("▶ Resuming animation...");
+            isPaused = false;
+            speechSynthesis.resume();
+        }
+
+        // ⏹ Stop Animation Completely
+        function stopAnimation() {
+            console.log("⏹ Stopping animation...");
+            isStopped = true;
+            isPaused = false;
+            cancelAnimationFrame(animationFrame);
+            speechSynthesis.cancel();
+            if (recorder && recorder.state === "recording") {
+                recorder.stop();
+            }
+        }
+
+        // 📌 Bind Buttons to Functions
+        document.getElementById("pauseButton").addEventListener("click", pauseAnimation);
+        document.getElementById("resumeButton").addEventListener("click", resumeAnimation);
+        document.getElementById("stopButton").addEventListener("click", stopAnimation);
+    </script>
+</body>
+</html>
