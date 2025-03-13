@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "http-server -p $PORT",
-    "build": "mkdir -p dist && cp -r * dist"
+    "build": "mkdir -p dist && find . -maxdepth 1 ! -name dist ! -name node_modules ! -name . -exec cp -r {} dist/ \\;"
   },
   "dependencies": {
     "http-server": "^0.12.3"
