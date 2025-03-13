@@ -1,15 +1,15 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-agentai-dev-400a9-authRole",
-      "UnauthRoleArn": "arn:aws:iam::515681530922:role/amplify-agentai-dev-400a9-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::515681530922:role/amplify-agentai-dev-400a9-authRole",
+      "AuthRoleName": "amplify-agentai-dev-d1ddb-authRole",
+      "UnauthRoleArn": "arn:aws:iam::515681530922:role/amplify-agentai-dev-d1ddb-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::515681530922:role/amplify-agentai-dev-d1ddb-authRole",
       "Region": "ap-south-1",
-      "DeploymentBucketName": "amplify-agentai-dev-400a9-deployment",
-      "UnauthRoleName": "amplify-agentai-dev-400a9-unauthRole",
-      "StackName": "amplify-agentai-dev-400a9",
-      "StackId": "arn:aws:cloudformation:ap-south-1:515681530922:stack/amplify-agentai-dev-400a9/13bd8cb0-ffce-11ef-9395-06d9cbf2d617",
-      "AmplifyAppId": "d3ug89fzj2wg92"
+      "DeploymentBucketName": "amplify-agentai-dev-d1ddb-deployment",
+      "UnauthRoleName": "amplify-agentai-dev-d1ddb-unauthRole",
+      "StackName": "amplify-agentai-dev-d1ddb",
+      "StackId": "arn:aws:cloudformation:ap-south-1:515681530922:stack/amplify-agentai-dev-d1ddb/c15fd010-ffda-11ef-b330-065bce7face5",
+      "AmplifyAppId": "d391hhhoflwcy3"
     }
   }
 }
