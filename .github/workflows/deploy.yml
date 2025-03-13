@@ -21,11 +21,15 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Configure Amplify
-      run: |
-        amplify configure
-        amplify init --yes
-        amplify add hosting --yes
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1  # Change this to your AWS region
 
-    - name: Publish to Amplify
+    - name: Pull Amplify Environment
+      run: amplify pull --yes
+
+    - name: Deploy to Amplify
       run: amplify publish --yes
