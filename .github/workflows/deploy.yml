@@ -32,7 +32,7 @@ jobs:
       run: amplify init --yes --amplify "{\"envName\":\"dev\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":false,\"accessKeyId\":\"${{ secrets.AWS_ACCESS_KEY_ID }}\",\"secretAccessKey\":\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\",\"region\":\"ap-south-1\"}}" --yes
 
     - name: Pull Amplify Environment
-      run: amplify pull --yes --appId YOUR_APP_ID --envName YOUR_ENV_NAME
+      run: amplify pull --yes --appId d391hhhoflwcy3 --envName dev
 
     - name: Install Dependencies
       run: npm install
