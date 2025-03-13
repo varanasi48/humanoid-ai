@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "http-server -p $PORT",
-    "build": "echo 'No build step defined'"
+    "build": "mkdir -p dist && cp -r * dist"
   },
   "dependencies": {
     "http-server": "^0.12.3"
