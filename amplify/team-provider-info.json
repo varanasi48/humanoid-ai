@@ -10,6 +10,14 @@
       "StackName": "amplify-agentai-dev-d1ddb",
       "StackId": "arn:aws:cloudformation:ap-south-1:515681530922:stack/amplify-agentai-dev-d1ddb/c15fd010-ffda-11ef-b330-065bce7face5",
       "AmplifyAppId": "d391hhhoflwcy3"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d391hhhoflwcy3",
+          "type": "cicd"
+        }
+      }
     }
   }
 }

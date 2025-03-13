@@ -34,10 +34,6 @@ jobs:
     - name: Pull Amplify Environment
       run: amplify pull --yes --appId d391hhhoflwcy3 --envName dev
 
-    - name: Add Hosting
-      run: |
-        echo "y" | amplify add hosting
-
     - name: Install Dependencies
       run: npm install
 
